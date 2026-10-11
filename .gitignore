@@ -1,6 +1,48 @@
-.env
-__pycache__/
-.pytest_cache/
-.venv/
-venv/
-*.pyc
+from main import choose_supported_chain, is_supported_address, TOKEN_CONTRACTS
+
+
+def test_bitcoin_detection():
+    assert choose_supported_chain('bc1qw508d6qejxtdg4y9p') == 'bitcoin'
+
+
+def test_evm_detection():
+    assert choose_supported_chain('0x1234567890abcdef1234567890abcdef12345678') == 'ethereum'
+
+
+def test_litecoin_detection():
+    assert choose_supported_chain('LQp4rMwo3rZQx1uMskn5a7gPxzE5M3piNC') == 'litecoin'
+
+
+def test_doge_detection():
+    assert choose_supported_chain('D7B5rQ2W4g9bP8Jq8T5Q6mW4nr9mL7dE1x') == 'dogecoin'
+
+
+def test_tron_detection():
+    assert choose_supported_chain('TQyB5NuVdK9L1pAnRk8fR5gM3R3nTtG1Wm') == 'tron'
+
+
+def test_xrp_detection():
+    assert choose_supported_chain('rHb9CJAWyB4r91VRWJdY8qYp7FQH7fUQ') == 'xrp'
+
+
+def test_cardano_detection():
+    assert choose_supported_chain('addr1q8v9k2m') == 'cardano'
+
+
+def test_ton_detection():
+    assert choose_supported_chain('EQC5x3qHf1V1s8ELn3sF') == 'ton'
+
+
+def test_solana_detection():
+    assert choose_supported_chain('5WGr6GjYVfBqg4Z1XwYQ1Q3L7K6M7Q7a3Kf1wT4jYv1r') == 'solana'
+
+
+def test_invalid_address_rejected():
+    assert not is_supported_address('not-an-address')
+
+
+def test_supported_token_contracts_are_present():
+    assert TOKEN_CONTRACTS['ethereum']['usdt'][0] == '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    assert TOKEN_CONTRACTS['ethereum']['usdc'][0] == '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    assert TOKEN_CONTRACTS['solana']['usdt'][0] == 'Es9vMFrzaCERsby2HcPUa5dsnEkA5Qn7cVWSk8fjS1bM'
+    assert TOKEN_CONTRACTS['solana']['usdc'][0] == 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
