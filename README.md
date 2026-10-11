@@ -1,45 +1,49 @@
-# Crypto Address Lookup Bot
+from main import choose_supported_chain, is_supported_address
 
-A Telegram bot built with Python and `python-telegram-bot` using async long polling. It listens for `/lookup`, asks for an address, detects the chain, and returns native-coin totals plus optional USDT/USDC summaries when history is present.
 
-## Requirements
+def test_bitcoin_detection():
+    assert choose_supported_chain('bc1qw508d6qejxtdg4y9p') == 'bitcoin'
 
-- Python 3.11+
-- Telegram bot token in `.env`
-- Internet access for public blockchain APIs
 
-## Setup
+def test_evm_detection():
+    assert choose_supported_chain('0x1234567890abcdef1234567890abcdef12345678') == 'ethereum'
 
-1. Copy `.env.example` to `.env` and add your Telegram bot token:
 
-   cp .env.example .env
+def test_litecoin_detection():
+    assert choose_supported_chain('LQp4rMwo3rZQx1uMskn5a7gPxzE5M3piNC') == 'litecoin'
 
-2. Update the token value in `.env`:
 
-   TELEGRAM_BOT_TOKEN=your_actual_token_here
+def test_doge_detection():
+    assert choose_supported_chain('D7B5rQ2W4g9bP8Jq8T5Q6mW4nr9mL7dE1x') == 'dogecoin'
 
-3. Install dependencies:
 
-   python -m pip install -r requirements.txt
+def test_tron_detection():
+    assert choose_supported_chain('TQyB5NuVdK9L1pAnRk8fR5gM3R3nTtG1Wm') == 'tron'
 
-4. Run the bot:
 
-   python main.py
+def test_xrp_detection():
+    assert choose_supported_chain('rHb9CJAWyB4r91VRWJdY8qYp7FQH7fUQ') == 'xrp'
 
-   or:
 
-   ./run.sh
+def test_cardano_detection():
+    assert choose_supported_chain('addr1q8v9k2m') == 'cardano'
 
-## Notes
 
-- The bot deletes all existing Telegram bot commands on startup and sets exactly one command: `/lookup`.
-- It ignores all non-command messages until `/lookup` is issued.
-- It loads the token with `python-dotenv` from `.env` and never hardcodes secrets.
-- The project intentionally avoids any secret or token commit by adding `.env` to `.gitignore`.
-- For public chain data, the code uses free APIs such as Blockchair, Blockscout, Solscan, TronGrid, Koios, and CoinGecko.
+def test_ton_detection():
+    assert choose_supported_chain('EQC5x3qHf1V1s8ELn3sF') == 'ton'
 
-## Testing
 
-Run the included unit tests:
+def test_solana_detection():
+    assert choose_supported_chain('5WGr6GjYVfBqg4Z1XwYQ1Q3L7K6M7Q7a3Kf1wT4jYv1r') == 'solana'
 
-pytest -q
+
+def test_invalid_address_rejected():
+    assert not is_supported_address('not-an-address')
+
+
+def test_supported_token_contracts_are_present():
+    from main import TOKEN_CONTRACTS
+    assert TOKEN_CONTRACTS['ethereum']['usdt'][0] == '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    assert TOKEN_CONTRACTS['ethereum']['usdc'][0] == '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    assert TOKEN_CONTRACTS['solana']['usdt'][0] == 'Es9vMFrzaCERsby2HcPUa5dsnEkA5Qn7cVWSk8fjS1bM'
+    assert TOKEN_CONTRACTS['solana']['usdc'][0] == 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
